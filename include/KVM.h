@@ -3,7 +3,7 @@
 #include <iostream>
 
 // External include
-/* #include <fmt/core.h> */
+#include <fmt/core.h>
 
 #include <cstdarg>
 #include <fcntl.h>
@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-using std::cout, std::cerr, std::endl;
+using std::cout, std::cerr, std::endl, fmt::format;
 
 const unsigned int PAGE_SIZE = 0x1000;
 
@@ -37,14 +37,14 @@ public:
   template <typename... Args> int send(int request, Args... args) {
     int ret = ioctl(kvm_fd, request, args...);
     if (ret < 0) {
-      panic("failed to send request {}");
+      panic(format("failed to send request {}", request));
     }
     return ret;
   }
   template <typename... Args> int cap(int request, Args... args) {
     int ret = ioctl(kvm_fd, KVM_CHECK_EXTENSION, request, args...);
     if (ret < 0) {
-      panic("failed to KVM_CHECK_EXTENSION request {}");
+      panic(format("failed to KVM_CHECK_EXTENSION request {}", request));
     }
     return ret;
   }
