@@ -1,23 +1,13 @@
-#include <iostream>
-
-#include <cstdarg>
-#include <fcntl.h>
-#include <linux/kvm.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-// External include
-#include <fmt/core.h>
-
 // Local include
 #include <KVM.h>
+
+#include <sys/ioctl.h>
+
 
 
 int main() {
 
-  fmt::print("asd");
+  const unsigned int vm_memory = PAGE_SIZE;
 
   cout << "Starting kvm api" << endl;
   KVM k = KVM();
@@ -26,4 +16,10 @@ int main() {
 
   int max_vcpus = k.cap(KVM_CAP_NR_VCPUS);
   cout << "Max vcpus: " << max_vcpus << endl;
+
+
+  size_t vcpu_mmap_size = k.send(KVM_GET_VCPU_MMAP_SIZE);
+  cout << "Vcpu mmap size: " << vcpu_mmap_size << endl;
+  /* char * mem = mmap(NULL, vm_memory, PROT_READ | PROT_WRITE); */
+
 }

@@ -1,6 +1,21 @@
+#pragma once
+
 #include <iostream>
 
+// External include
+/* #include <fmt/core.h> */
+
+#include <cstdarg>
+#include <fcntl.h>
+#include <linux/kvm.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using std::cout, std::cerr, std::endl;
+
+const unsigned int PAGE_SIZE = 0x1000;
 
 void panic(std::string error) {
   cerr << "ERROR: " << strerror(errno) << endl;
@@ -22,14 +37,14 @@ public:
   template <typename... Args> int send(int request, Args... args) {
     int ret = ioctl(kvm_fd, request, args...);
     if (ret < 0) {
-      panic("failed to send request");
+      panic("failed to send request {}");
     }
     return ret;
   }
   template <typename... Args> int cap(int request, Args... args) {
     int ret = ioctl(kvm_fd, KVM_CHECK_EXTENSION, request, args...);
     if (ret < 0) {
-      panic("failed to KVM_CHECK_EXTENSION request");
+      panic("failed to KVM_CHECK_EXTENSION request {}");
     }
     return ret;
   }
@@ -38,8 +53,7 @@ public:
     int ret = close(kvm_fd);
 
     if (ret < 0) {
-      panic("failed to close kvm_fd");
+      panic("failed to close kvm_fd ");
     }
   }
 };
-
