@@ -2,3 +2,5 @@
 .direnv
 .history
 .__pycache__
+.ccls-cache/
+build
