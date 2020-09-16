@@ -8,10 +8,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+// External include
+#include <fmt/core.h>
+
+// Local include
 #include <KVM.h>
 
 
 int main() {
+
+  fmt::print("asd");
 
   cout << "Starting kvm api" << endl;
   KVM k = KVM();
