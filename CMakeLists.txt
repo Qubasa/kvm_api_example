@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-
-# set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++")
-
 # Set debug mode
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -24,6 +21,12 @@ else()
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         message("Adding ubsan!")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=integer")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=nullability")
+        set(CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=implicit-conversion")
+        set(CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=array-bounds")
         add_compile_options(-fno-omit-frame-pointer)
     endif()
 endif()
