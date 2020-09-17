@@ -8,16 +8,21 @@ if (MSVC)
     # warning level 4 and all warnings as errors
     add_compile_options(/W4 /WX)
 else()
-
     message("Using clang")
+
+    # Find clang executable and set it as compiler
     find_program(Clang_P clang++ REQUIRED True)
     set(CMAKE_CXX_COMPILER ${Clang_P})
+
+    # Use clang lld instead of gnu ld
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+
     # lots of warnings and all warnings as errors
     add_compile_options(-Wall -Wextra -pedantic -Werror
         -Wno-unused-variable
     )
 
+    # Enable clang ubsan when in debug mode
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         message("Adding ubsan!")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
@@ -35,7 +40,7 @@ endif()
 project(KVM_Fuzzer VERSION 0.1)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Generate compile_commands.json
