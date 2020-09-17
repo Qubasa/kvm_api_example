@@ -24,6 +24,7 @@ else()
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         message("Adding ubsan!")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
+        add_compile_options(-fno-omit-frame-pointer)
     endif()
 endif()
 
