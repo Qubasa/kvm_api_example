@@ -11,6 +11,9 @@ else()
     message("Using clang")
 
     # Find clang executable and set it as compiler
+    find_program(Clang_X clang REQUIRED True)
+    set(CMAKE_C_COMPILER ${Clang_X})
+    # Find clang executable and set it as compiler
     find_program(Clang_P clang++ REQUIRED True)
     set(CMAKE_CXX_COMPILER ${Clang_P})
 
