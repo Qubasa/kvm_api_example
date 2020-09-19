@@ -36,6 +36,7 @@ else()
         set(CMAKE_EXE_LINKER_FLAGS
             "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=array-bounds")
         add_compile_options(-fno-omit-frame-pointer)
+        add_definitions(-DMY_DEBUG)
     endif()
 endif()
 
