@@ -7,9 +7,9 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-/* extern const unsigned char guest16[], guest16_end[]; */
-
-unsigned long guest_code[] = { 0xb82a00f4 };
+// mov ax, 42
+// hlt
+unsigned int guest_code[] = { 0xf4002ab8 };
 
 void vm_thread(VM& vm){
   while (true) {
@@ -41,10 +41,8 @@ void vm_thread(VM& vm){
 check:
   struct kvm_regs regs;
   unsigned long memval;
-  if (vm.send_vcpu(KVM_GET_REGS, &regs) < 0) {
-    perror("KVM_GET_REGS");
-    exit(1);
-  }
+
+  vm.send_vcpu(KVM_GET_REGS, &regs);
 
   if (regs.rax != 42) {
     printf("Wrong result: {E,R,}AX is %lld\n", regs.rax);
@@ -64,27 +62,21 @@ int main() {
   // Create vm
   VM vm = VM(k, 0);
 
-  // Give vm one page of memory
+  // Give vm two pages of memory
   vm.add_mem_pages(2, 0);
 
   // Add vcpu
   vm.add_vcpu();
 
-  /* vm.add_mem_pages(3, 1); */
   // Set vcpu into real mode
   vm.set_real_mode();
 
-  // Copy hlt instruction to addr 0
+  // Copy instructions to addr 0
   vm.copy_to_mem(0, guest_code, sizeof(guest_code));
 
-  unsigned int* addr = (unsigned int*) (vm.mem_vec.front().userspace_addr);
-
-  for(int i =0; i < 4; i++){
-    fmt::print("{:4x}", addr[i]);
-  }
-  cout << endl;
-
-  std::thread first(vm_thread, std::ref(vm));
+  // Run vm
+  // TODO: Make vm thread safe
+  std::thread task(vm_thread, std::ref(vm));
 
   while(true){
     struct kvm_regs regs;
@@ -94,14 +86,7 @@ int main() {
     cout << "RIP: " << regs.rip << " RAX: " << regs.rax << endl;
   }
 
-  first.join();
- /* char *mem = (char *)vm.mem.value().userspace_addr; */
-  /* memcpy(&memval, mem + 0x400, 8); */
-  /* if (memval != 42) { */
-  /*   printf("Wrong result: memory at 0x400 is %lld\n", */
-  /*          (unsigned long long)memval); */
-  /*   return 0; */
-  /* } */
+  task.join();
 
   return 1;
 }

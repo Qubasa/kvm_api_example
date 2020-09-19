@@ -30,7 +30,7 @@ constexpr bool DEBUG = false;
 #endif
 
 template <typename... Args>
-constexpr void dbg(std::string_view msg, Args... args) {
+constexpr void inline dbg(std::string_view msg, Args... args) {
   if constexpr (DEBUG) {
     fmt::print(format("DEBUG: {}", msg), args...);
   }
@@ -193,6 +193,13 @@ public:
     }
   }
 
+  template <typename... Args> int inline send_vcpu(int request,size_t i_vcpu, Args... args) {
+    int ret = ioctl(vcpus_vec.at(i_vcpu).fd, request, args...);
+    if (ret < 0) {
+      panic("failed to send vcpu request: {} vm_id: {}", request, id);
+    }
+    return ret;
+  }
   template <typename... Args> int inline send_vcpu(int request, Args... args) {
     assert(!vcpus_vec.empty());
 
@@ -203,7 +210,7 @@ public:
     return ret;
   }
 
-  void set_real_mode() {
+  void set_real_mode(unsigned long rip=0) {
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
@@ -217,7 +224,7 @@ public:
     memset(&regs, 0, sizeof(regs));
 
     regs.rflags = 0x2; // VT-X needs this
-    regs.rip = 0;      // Instruction pointer
+    regs.rip = rip;      // Instruction pointer
 
     send_vcpu(KVM_SET_REGS, &regs);
   }
@@ -256,10 +263,10 @@ public:
     }
   }
 
-  const struct vcpu &run() {
+  const struct vcpu &run(size_t index=0) {
     assert(!vcpus_vec.empty());
 
-    const auto &vcpu = vcpus_vec.front();
+    const auto &vcpu = vcpus_vec.at(index);
     if (ioctl(vcpu.fd, KVM_RUN, 0) < 0) {
       panic("Could not execute KVM_RUN");
     }
