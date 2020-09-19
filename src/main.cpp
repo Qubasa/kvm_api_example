@@ -9,9 +9,9 @@
 
 // mov ax, 42
 // hlt
-unsigned int guest_code[] = { 0xf4002ab8 };
+unsigned int guest_code[] = {0xf4002ab8};
 
-void vm_thread(VM& vm){
+void vm_thread(VM &vm) {
   while (true) {
     cout << "Starting vm " << endl;
     const struct vcpu &vcpu0 = vm.run();
@@ -75,10 +75,10 @@ int main() {
   vm.copy_to_mem(0, guest_code, sizeof(guest_code));
 
   // Run vm
-  // TODO: Make vm thread safe
+  // Note: don't write to vm obj in thread
   std::thread task(vm_thread, std::ref(vm));
 
-  while(true){
+  while (true) {
     struct kvm_regs regs;
     unsigned long memval;
     vm.send_vcpu(KVM_GET_REGS, &regs);
