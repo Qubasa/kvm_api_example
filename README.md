@@ -1,7 +1,9 @@
 ## Description
 
-This is a simple c++ wrapper around the kvm api to start a vm in 16bit real mode
+This is a simple (not feature complete) c++20 wrapper around the kvm api to start a vm in 16bit real mode
 and run two instructions.
+
+Uses all options of clangs ubsan for robustness.
 
 ## Build
 ```bash
